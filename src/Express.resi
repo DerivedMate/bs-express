@@ -4,63 +4,62 @@ type complete;
 /** abstract type which ensure middleware function must either
      call the [next] function or one of the [send] function on the
      response object.
-
      This should be a great argument for OCaml, the type system
      prevents silly error which in this case would make the server hang */
 module Error: {
   type t = exn;
 
   /** Error type */
-  [@bs.send] [@bs.return null_undefined_to_opt]
-  external message: Js_exn.t => option(string) = "message";
-  [@bs.send] [@bs.return null_undefined_to_opt]
-  external name: Js_exn.t => option(string) = "name";
+  @bs.send @bs.return(null_undefined_to_opt)
+  external message: Js_exn.t => option<string> = "message";
+  @bs.send @bs.return(null_undefined_to_opt)
+  external name: Js_exn.t => option<string> = "name";
 };
 
 module Request: {
   type t;
-  type params = Js.Dict.t(Js.Json.t);
+  type params = Js.Dict.t<Js.Json.t>;
 
   /** [params request] return the JSON object filled with the
        request parameters */
-  [@bs.get] external params: t => params = "params";
+  @bs.get external params: t => params = "params";
 
   /** [asJsonObject request] casts a [request] to a JSON object. It is
        common in Express application to use the Request object as a
        placeholder to maintain state through the various middleware which
        are executed. */
-  external asJsonObject: t => Js.Dict.t(Js.Json.t) = "%identity";
+  external asJsonObject: t => Js.Dict.t<Js.Json.t> = "%identity";
 
   /** [baseUrl request] returns the 'baseUrl' property */
-  [@bs.get] external baseUrl: t => string = "baseUrl";
+  @bs.get external baseUrl: t => string = "baseUrl";
 
   /** When using the json body-parser middleware and receiving a request with a
        content type of "application/json", this property is a Js.Json.t that
        contains the body sent by the request. */
-  [@bs.get] [@bs.return null_undefined_to_opt]
-  external bodyJSON: t => option(Js.Json.t) = "body";
+  @bs.get @bs.return(null_undefined_to_opt)
+  external bodyJSON: t => option<Js.Json.t> = "body";
 
   /** When using the raw body-parser middleware and receiving a request with a
        content type of "application/octet-stream", this property is a
        Node_buffer.t that contains the body sent by the request. */
-  [@bs.get] [@bs.return null_undefined_to_opt]
-  external bodyRaw: t => option(Node_buffer.t) = "body";
+  @bs.get @bs.return(null_undefined_to_opt)
+  external bodyRaw: t => option<Node_buffer.t> = "body";
 
   /** When using the text body-parser middleware and receiving a request with a
        content type of "text/plain", this property is a string that
        contains the body sent by the request. */
-  let bodyText: t => option(string);
+  let bodyText: t => option<string>;
 
   /** When using the urlencoded body-parser middleware and receiving a request
        with a content type of "application/x-www-form-urlencoded", this property
         is a Js.Dict.t string that contains the body sent by the request. */
-  let bodyURLEncoded: t => option(Js.Dict.t(string));
+  let bodyURLEncoded: t => option<Js.Dict.t<string>>;
 
   /** When using cookie-parser middleware, this property is an object
        that contains cookies sent by the request. If the request contains
        no cookies, it defaults to {}.*/
-  [@bs.get] [@bs.return null_undefined_to_opt]
-  external cookies: t => option(Js.Dict.t(Js.Json.t)) = "cookies";
+  @bs.get @bs.return(null_undefined_to_opt)
+  external cookies: t => option<Js.Dict.t<Js.Json.t>> = "cookies";
 
   /** When using cookie-parser middleware, this property contains signed cookies
        sent by the request, unsigned and ready for use. Signed cookies reside in
@@ -69,25 +68,25 @@ module Request: {
        Note that signing a cookie does not make it “hidden” or encrypted;
        but simply prevents tampering (because the secret used to
        sign is private). */
-  [@bs.get] [@bs.return null_undefined_to_opt]
-  external signedCookies: t => option(Js.Dict.t(Js.Json.t)) = "signedCookies";
+  @bs.get @bs.return(null_undefined_to_opt)
+  external signedCookies: t => option<Js.Dict.t<Js.Json.t>> = "signedCookies";
 
   /** [hostname request] Contains the hostname derived from the Host
        HTTP header. */
-  [@bs.get] external hostname: t => string = "hostname";
+  @bs.get external hostname: t => string = "hostname";
 
   /** [ip request] Contains the remote IP address of the request. */
-  [@bs.get] external ip: t => string = "ip";
+  @bs.get external ip: t => string = "ip";
 
   /** [fresh request] returns [true] whether the request is "fresh" */
-  [@bs.get] external fresh: t => bool = "fresh";
+  @bs.get external fresh: t => bool = "fresh";
 
   /** [stale request] returns [true] whether the request is "stale" */
-  [@bs.get] external stale: t => bool = "stale";
+  @bs.get external stale: t => bool = "stale";
 
   /** [method_ request] return a string corresponding to the HTTP
        method of the request: GET, POST, PUT, and so on */
-  [@bs.get] external methodRaw: t => string = "method";
+  @bs.get external methodRaw: t => string = "method";
   type httpMethod =
     | Get
     | Post
@@ -105,10 +104,10 @@ module Request: {
 
   /** [originalUrl request] returns the original url. See
        https://expressjs.com/en/4x/api.html#req.originalUrl */
-  [@bs.get] external originalUrl: t => string = "originalUrl";
+  @bs.get external originalUrl: t => string = "originalUrl";
 
   /** [path request] returns the path part of the request URL. */
-  [@bs.get] external path: t => string = "path";
+  @bs.get external path: t => string = "path";
   type protocol =
     | Http
     | Https;
@@ -118,35 +117,35 @@ module Request: {
   let protocol: t => protocol;
 
   /** [secure request] returns [true] if a TLS connection is established */
-  [@bs.get] external secure: t => bool = "secure";
+  @bs.get external secure: t => bool = "secure";
 
   /** [query request] returns an object containing a property for each
        query string parameter in the route. If there is no query string,
        it returns the empty object, {} */
-  [@bs.get] external query: t => Js.Dict.t(Js.Json.t) = "query";
+  @bs.get external query: t => Js.Dict.t<Js.Json.t> = "query";
 
   /** [acceptsRaw accepts types] checks if the specified content types
        are acceptable, based on the request's Accept HTTP header field.
        The method returns the best match, or if none of the specified
        content types is acceptable, returns [false] */
-  let accepts: (array(string), t) => option(string);
-  let acceptsCharsets: (array(string), t) => option(string);
+  let accepts: (array<string>, t) => option<string>;
+  let acceptsCharsets: (array<string>, t) => option<string>;
 
   /** [get return field] returns the specified HTTP request header
        field (case-insensitive match) */
-  [@bs.send.pipe: t] [@bs.return null_undefined_to_opt]
-  external get: string => option(string) = "get";
+  @bs.send @bs.return(null_undefined_to_opt)
+  external get: string => option<string> = "get";
 
   /** [xhr request] returns [true] if the request’s X-Requested-With
        header field is "XMLHttpRequest", indicating that the request was
        issued by a client library such as jQuery */
-  [@bs.get] external xhr: t => bool = "xhr";
+  @bs.get external xhr: t => bool = "xhr";
 };
 
 module Response: {
   type t;
   module StatusCode: {
-    [@bs.deriving jsConverter]
+    @bs.deriving(jsConverter)
     type t =
       | Ok
       | Created
@@ -206,7 +205,7 @@ module Response: {
       | LoopDetected
       | NotExtended
       | NetworkAuthenticationRequired;
-    let fromInt: int => option(t);
+    let fromInt: int => option<t>;
     let toInt: t => int;
   };
 
@@ -219,7 +218,7 @@ module Response: {
       ~secure: bool=?,
       ~signed: bool=?,
       ~path: string=?,
-      ~sameSite: [ | `Lax | `Strict]=?,
+      ~sameSite: [ | #Lax | #Strict]=?,
       ~domain: string=?,
       Js.Json.t,
       t
@@ -236,48 +235,48 @@ module Response: {
       ~secure: bool=?,
       ~signed: bool=?,
       ~path: string=?,
-      ~sameSite: [ | `Lax | `Strict]=?,
+      ~sameSite: [ | #Lax | #Strict]=?,
       t
     ) =>
     t;
 
-  [@bs.send.pipe: t] external sendFile: (string, 'a) => complete = "sendFile";
-  [@bs.send.pipe: t] external sendString: string => complete = "send";
-  [@bs.send.pipe: t] external sendJson: Js.Json.t => complete = "json";
-  [@bs.send.pipe: t] external sendBuffer: Node.Buffer.t => complete = "send";
-  [@bs.send.pipe: t] external sendArray: array('a) => complete = "send";
-  [@bs.send.pipe: t] external sendRawStatus: int => complete = "sendStatus";
+  @bs.send external sendFile: (string, 'a) => complete = "sendFile";
+  @bs.send external sendString: string => complete = "send";
+  @bs.send external sendJson: Js.Json.t => complete = "json";
+  @bs.send external sendBuffer: Node.Buffer.t => complete = "send";
+  @bs.send external sendArray: array<'a> => complete = "send";
+  @bs.send external sendRawStatus: int => complete = "sendStatus";
   let sendStatus: (StatusCode.t, t) => complete;
-  [@bs.send.pipe: t] external rawStatus: int => t = "status";
+  @bs.send external rawStatus: int => t = "status";
   let status: (StatusCode.t, t) => t;
   
-  [@bs.send.pipe: t] [@ocaml.deprecated "Use sendJson instead`"]
+  @bs.send @ocaml.deprecated("Use sendJson instead`")
   external json: Js.Json.t => complete = "json";
-  [@bs.send.pipe: t]
+  @bs.send
   external redirectCode: (int, string) => complete = "redirect";
-  [@bs.send.pipe: t] external redirect: string => complete = "redirect";
-  [@bs.send.pipe: t] external setHeader: (string, string) => t = "set";
-  [@bs.send.pipe: t] external setType: string => t = "type";
-  [@bs.send.pipe: t] external setLinks: Js.Dict.t(string) => t = "links";
-  [@bs.send.pipe: t] external end_: complete = "end";
-  [@bs.send.pipe: t] external render: (string, Js.Dict.t(string), 'a) => complete = "render";
+  @bs.send external redirect: string => complete = "redirect";
+  @bs.send external setHeader: (string, string) => t = "set";
+  @bs.send external setType: (string) => t = "type";
+  @bs.send external setLinks: (Js.Dict.t<string>) => t = "links";
+  @bs.send external end_: t => complete = "end";
+  @bs.send external render: (t, string, Js.Dict.t<string>, 'a) => complete = "render";
 };
 
 module Next: {
   type content;
-  type t = (Js.undefined(content), Response.t) => complete;
+  type t = (Js.undefined<content>, Response.t) => complete;
 
   /** value to use as [next] callback argument to invoke the next
        middleware */
-  let middleware: Js.undefined(content);
+  let middleware: Js.undefined<content>;
 
   /** value to use as [next] callback argument to skip middleware
        processing for the current route. */
-  let route: Js.undefined(content);
+  let route: Js.undefined<content>;
 
   /** [error e] returns the argument for [next] callback to be propagate
        error [e] through the chain of middleware. */
-  let error: Error.t => Js.undefined(content);
+  let error: Error.t => Js.undefined<content>;
 };
 
 module ByteLimit: {
@@ -322,49 +321,49 @@ module Middleware: {
     let from: f => t;
     type errorF;
     let fromError: errorF => t;
-  };
+  }
   module type ApplyMiddleware = {
     type f;
     let apply: (f, next, Request.t, Response.t) => unit;
     type errorF;
     let applyWithError: (errorF, next, Error.t, Request.t, Response.t) => unit;
-  };
+  }
   module Make:
     (A: ApplyMiddleware) => S with type f = A.f and type errorF = A.errorF;
   include
     S with
       type f = (next, Request.t, Response.t) => complete and
       type errorF = (next, Error.t, Request.t, Response.t) => complete;
-};
+}
 
 module PromiseMiddleware:
   Middleware.S with
     type f =
-      (Middleware.next, Request.t, Response.t) => Js.Promise.t(complete) and
+      (Middleware.next, Request.t, Response.t) => Js.Promise.t<complete> and
     type errorF =
       (Middleware.next, Error.t, Request.t, Response.t) =>
-      Js.Promise.t(complete);
+      Js.Promise.t<complete>;
 
 module type Routable = {
   type t;
   let use: (t, Middleware.t) => unit;
-  let useWithMany: (t, array(Middleware.t)) => unit;
+  let useWithMany: (t, array<Middleware.t>) => unit;
   let useOnPath: (t, ~path: string, Middleware.t) => unit;
-  let useOnPathWithMany: (t, ~path: string, array(Middleware.t)) => unit;
+  let useOnPathWithMany: (t, ~path: string, array<Middleware.t>) => unit;
   let get: (t, ~path: string, Middleware.t) => unit;
-  let getWithMany: (t, ~path: string, array(Middleware.t)) => unit;
+  let getWithMany: (t, ~path: string, array<Middleware.t>) => unit;
   let options: (t, ~path: string, Middleware.t) => unit;
-  let optionsWithMany: (t, ~path: string, array(Middleware.t)) => unit;
+  let optionsWithMany: (t, ~path: string, array<Middleware.t>) => unit;
   let param: (t, ~name: string, Middleware.t) => unit;
   let post: (t, ~path: string, Middleware.t) => unit;
-  let postWithMany: (t, ~path: string, array(Middleware.t)) => unit;
+  let postWithMany: (t, ~path: string, array<Middleware.t>) => unit;
   let put: (t, ~path: string, Middleware.t) => unit;
-  let putWithMany: (t, ~path: string, array(Middleware.t)) => unit;
+  let putWithMany: (t, ~path: string, array<Middleware.t>) => unit;
   let patch: (t, ~path: string, Middleware.t) => unit;
-  let patchWithMany: (t, ~path: string, array(Middleware.t)) => unit;
+  let patchWithMany: (t, ~path: string, array<Middleware.t>) => unit;
   let delete: (t, ~path: string, Middleware.t) => unit;
-  let deleteWithMany: (t, ~path: string, array(Middleware.t)) => unit;
-};
+  let deleteWithMany: (t, ~path: string, array<Middleware.t>) => unit;
+}
 
 module MakeBindFunctions: (T: {type t;}) => Routable with type t = T.t;
 
@@ -377,9 +376,9 @@ module Router: {
 
 module HttpServer: {
   type t;
-  [@bs.send] external on: (t, [@bs.string] [
-    | `request((Request.t, Response.t) => unit)
-    | `close(unit => unit)
+  @bs.send external on: (t, @bs.string [
+    | #request((Request.t, Response.t) => unit)
+    | #close(unit => unit)
   ]) => unit = "on";
 };
 
@@ -391,19 +390,19 @@ module App: {
   include Routable;
   let useRouter: (t, Router.t) => unit;
   let useRouterOnPath: (t, ~path: string, Router.t) => unit;
-  [@bs.module] external make: unit => t = "express";
+  @bs.module external make: unit => t = "express";
   external asMiddleware: t => Middleware.t = "%identity";
   let listen:
     (
       t,
       ~port: int=?,
       ~hostname: string=?,
-      ~onListen: Js.null_undefined(Js.Exn.t) => unit=?,
+      ~onListen: Js.null_undefined<Js.Exn.t> => unit=?,
       unit
     ) =>
     HttpServer.t;
-  [@bs.send] external disable: (t, ~name: string) => unit = "disable";
-  [@bs.send] external set: (t, string, string) => unit = "set";
+  @bs.send external disable: (t, ~name: string) => unit = "disable";
+  @bs.send external set: (t, string, string) => unit = "set";
 };
 
 
@@ -415,21 +414,21 @@ module Static: {
   type options;
   type stat;
   let defaultOptions: unit => options;
-  [@bs.set] external dotfiles: (options, string) => unit = "dotfiles";
-  [@bs.set] external etag: (options, bool) => unit = "etag";
-  [@bs.set] external extensions: (options, array(string)) => unit = "extensions";
-  [@bs.set] external fallthrough: (options, bool) => unit = "fallthrough";
-  [@bs.set] external immutable: (options, bool) => unit = "immutable";
-  [@bs.set] external indexBool: (options, bool) => unit = "index";
-  [@bs.set] external indexString: (options, string) => unit = "index";
-  [@bs.set] external lastModified: (options, bool) => unit = "lastModified";
-  [@bs.set] external maxAge: (options, int) => unit = "maxAge";
-  [@bs.set] external redirect: (options, bool) => unit = "redirect";
-  [@bs.set] external setHeaders: (options, (Request.t, string, stat) => unit) => unit = "setHeaders";
+  @bs.set external dotfiles: (options, string) => unit = "dotfiles";
+  @bs.set external etag: (options, bool) => unit = "etag";
+  @bs.set external extensions: (options, array<string>) => unit = "extensions";
+  @bs.set external fallthrough: (options, bool) => unit = "fallthrough";
+  @bs.set external immutable: (options, bool) => unit = "immutable";
+  @bs.set external indexBool: (options, bool) => unit = "index";
+  @bs.set external indexString: (options, string) => unit = "index";
+  @bs.set external lastModified: (options, bool) => unit = "lastModified";
+  @bs.set external maxAge: (options, int) => unit = "maxAge";
+  @bs.set external redirect: (options, bool) => unit = "redirect";
+  @bs.set external setHeaders: (options, (Request.t, string, stat) => unit) => unit = "setHeaders";
   type t;
 
   /** [make directory] creates a static middleware for [directory] */
-  [@bs.module "express"] external make: (string, options) => t = "static";
+  @bs.module("express") external make: (string, options) => t = "static";
 
   /** [asMiddleware static] casts [static] to a Middleware type */
   external asMiddleware: t => Middleware.t = "%identity";
